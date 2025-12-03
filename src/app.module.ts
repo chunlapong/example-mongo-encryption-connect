@@ -9,7 +9,7 @@ import {
 @Module({
   imports: [
     MongoEncryptModule.register(process.env.MONGODB_KEYVAULT || '', {
-      AzureKeyvaultName: process.env.AZURE_KEYVAULT_ALT_NAME || '',
+      keyAltName: process.env.AZURE_KEYVAULT_ALT_NAME || '',
       keyVaultNamespace:
         process.env.AZURE_KEYVAULT_NAMESPACE || 'encryption.__keyVault',
       localMasterKey: process.env.AZURE_LOCAL_MASTER_KEY || '',
