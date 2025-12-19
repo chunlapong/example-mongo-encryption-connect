@@ -1,4 +1,4 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Post } from '@nestjs/common';
 import { AppService } from './app.service';
 import { MongoClient } from 'mongodb';
 import { MongoEncryptService } from '@eqxjs/mongodb-encrypt-data';
@@ -28,5 +28,25 @@ export class AppController {
       return 'Key vault collection already exists.';
     }
     return 'Document inserted with encrypted fields.';
+  }
+
+  @Post('insert-document')
+  async insertDocument(){
+    const client = new MongoClient(process.env.MONGODB_KEYVAULT || '');
+    await client.connect();
+
+    await client.db('test').collection('test').insertOne({
+      "id": "sfegtfvbsrgtwavb",
+      "identificationIdEncrypted": await this.mongodb.encryptField('12345678903070')
+    });
+    
+    let result = await client.db('test').collection('test').findOne({ "id": "sfegtfvbsrgtwavb" });
+    console.log('data before decrypt', result);
+    if (result) {
+      result.identificationIdEncrypted = await this.mongodb.decryptField(result.identificationIdEncrypted);
+    }
+
+    return result;
+
   }
 }
